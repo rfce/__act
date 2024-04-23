@@ -25,8 +25,10 @@ const getCount = async (req, res) => {
 
 	const file = hash + ".txt"
 
+	const data = count === 0 ? `${count}\nYou need to recharge` : String(count)
+
 	// Write counter data to file
-	await fs.writeFile(path.join(__dirname, "..", "assets", file), String(count), "utf-8")
+	await fs.writeFile(path.join(__dirname, "..", "assets", file), data, "utf-8")
 
 	// Send the file
 	const options = {
