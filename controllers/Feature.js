@@ -18,7 +18,7 @@ const getCount = async (req, res) => {
 
 	// Decrease count
 	if (count > 0) {
-		await Author.findOneAndUpdate({ hash }, { __c: { $inc: -1 } })
+		await Author.findOneAndUpdate({ hash }, { __m: { $inc: -1 } })
 	}
 
 	res.json({
