@@ -39,18 +39,7 @@ const getCount = async (req, res) => {
 	// Write counter data to file
 	await fs.writeFile(location, data, "utf-8")
 
-	// Send the file
-	const options = {
-		root: path.join(__dirname, "..", "assets")
-	}
-
-	res.sendFile(file, options, function (error) {
-		if (error) {
-			console.log("=> Error (sending file):", error)
-		}
-
-		fs.unlink(location)
-	})
+	res.sendFile(location)
 }
 
 // Create a new device
