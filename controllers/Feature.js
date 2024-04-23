@@ -1,9 +1,11 @@
 const Author = require("../models/Author")
 const { v4: uuid } = require("uuid")
+const path = require("path")
+const fs = require("fs").promises
 
 // Get the remaining number of activations
 const getCount = async (req, res) => {
-	const { hash } = req.body
+	const hash = req.query.hash
 
 	const author = await Author.findOne({ hash })
 
@@ -18,14 +20,24 @@ const getCount = async (req, res) => {
 
 	// Decrease count
 	if (count > 0) {
-		await Author.findOneAndUpdate({ hash }, { __m: { $inc: -1 } })
+		await Author.findOneAndUpdate({ hash }, { $inc: { __m: -1 } })
 	}
 
-	res.json({
-		success: true,
-		message: "Remaining activations",
-		count
-	})
+	const file = hash + ".txt"
+
+	// Write counter data to file
+	await fs.writeFile(path.join(__dirname, "..", "assets", file), String(count), "utf-8")
+
+	// Send the file
+	const options = {
+        root: path.join(__dirname, "..", "assets")
+    } 
+
+    res.sendFile(file, options, function (error) {
+        if (error) {
+            console.log("=> Error (sending file):", error)
+        }
+    })
 }
 
 // Create a new device
