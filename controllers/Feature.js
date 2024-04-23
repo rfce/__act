@@ -5,7 +5,7 @@ const fs = require("fs").promises
 
 // Get the remaining number of activations
 const getCount = async (req, res) => {
-	const hash = req.query.hash
+	const { hash, device } = req.query
 
 	if (validate(hash) === false) {
 		return res.json({
@@ -27,7 +27,16 @@ const getCount = async (req, res) => {
 
 	// Decrease count
 	if (count > 0) {
-		await Author.findOneAndUpdate({ hash }, { $inc: { __m: -1 } })
+		// Make sure that it is not an api call of same script instance
+		if (author.device === device) {
+			console.log("[+] Ignoring duplicate instance")
+		}
+		else {
+			await Author.findOneAndUpdate({ hash }, { 
+				__m: count - 1,
+				device
+			})
+		}
 	}
 
 	const file = hash + ".txt"
@@ -67,7 +76,49 @@ const createUser = async (req, res) => {
 	})
 }
 
+// passcode: passcode is required to access this api
+// 			"1eb1bfe8-6612-448d-a135-31f8ca632da4"
+// hash: hash of the device to upgrade
+// count: license count to be added to device
+const setSubscription = async (req, res) => {
+	const { passcode, hash, count } = req.body
+
+	if (passcode !== "1eb1bfe8-6612-448d-a135-31f8ca632da4") {
+		return res.json({
+			success: false,
+			message: "Invalid passcode"
+		})
+	}
+
+	if (validate(hash) === false) {
+		return res.json({
+			success: false,
+			message: "Invalid device hash"
+		})
+	}
+
+	const device = await Author.findOne({ hash })
+
+	if (device === null) {
+		return res.json({
+			success: false,
+			message: "Couldn't find device with provided hash"
+		})
+	}	
+
+	const updated = await Author.findOneAndUpdate({ hash }, {
+		$inc: { __m: count }
+	}, { new: true })
+
+	res.json({
+		success: true,
+		message: "Subscription has been sent",
+		count: updated.__m
+	})
+}
+
 module.exports = {
 	getCount,
-	createUser
+	createUser,
+	setSubscription
 }
