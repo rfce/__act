@@ -18,8 +18,6 @@ app.set('trust proxy', true)
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
-app.use('/assets', express.static("assets"))
-
 const whitelist = ['http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:5500', 'undefined', 'null', process.env.ORIGIN, process.env.STAGING_ORIGIN]
 
 app.use(cors({

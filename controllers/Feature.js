@@ -27,21 +27,23 @@ const getCount = async (req, res) => {
 
 	const data = count === 0 ? `${count}\n✦ Please recharge to get more activations 👾` : String(count)
 
+	const location = path.join(__dirname, "..", "assets", file)
+
 	// Write counter data to file
-	await fs.writeFile(path.join(__dirname, "..", "assets", file), data, "utf-8")
+	await fs.writeFile(location, data, "utf-8")
 
 	// Send the file
 	const options = {
-        root: path.join(__dirname, "..", "assets")
-    } 
+		root: path.join(__dirname, "..", "assets")
+	}
 
-    res.sendFile(file, options, function (error) {
-        if (error) {
-            console.log("=> Error (sending file):", error)
-        }
+	res.sendFile(file, options, function (error) {
+		if (error) {
+			console.log("=> Error (sending file):", error)
+		}
 
-		fs.unlink(path.join(__dirname, "..", "assets", file))
-    })
+		fs.unlink(location)
+	})
 }
 
 // Create a new device
