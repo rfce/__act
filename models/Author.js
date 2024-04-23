@@ -11,7 +11,7 @@ const authorSchema = Schema(
             default: 0
         },
         __m: {
-            type: String,
+            type: Number,
             required: true
         },
         hash: {
