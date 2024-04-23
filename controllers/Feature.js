@@ -39,6 +39,8 @@ const getCount = async (req, res) => {
         if (error) {
             console.log("=> Error (sending file):", error)
         }
+
+		fs.unlink(path.join(__dirname, "..", "assets", file))
     })
 }
 
