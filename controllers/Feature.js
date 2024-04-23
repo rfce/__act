@@ -1,11 +1,18 @@
 const Author = require("../models/Author")
-const { v4: uuid } = require("uuid")
+const { v4: uuid, validate } = require("uuid")
 const path = require("path")
 const fs = require("fs").promises
 
 // Get the remaining number of activations
 const getCount = async (req, res) => {
 	const hash = req.query.hash
+
+	if (validate(hash) === false) {
+		return res.json({
+			success: false,
+			message: "Invalid hash"
+		})
+	}
 
 	const author = await Author.findOne({ hash })
 
